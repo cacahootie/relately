@@ -5,5 +5,7 @@ def Select(engine, query, mogrify=False):
         return engine.mogrify(sql)
     params = None
     if 'where' in query:
-        params = [x['right_operand'] for x in query['where']]
+        params = [x['right_operand'] for x in query['where'] or query]
+    if 'any' in query:
+        params = [x['right_operand'] for x in query['any'] or query]
     return engine.execute(sql, params)

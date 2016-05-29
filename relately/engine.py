@@ -53,7 +53,7 @@ class Engine(object):
                     raise
 
     def messageify(self, stmt, params=None, error=None):
-        print '\n\n', '*'*80, '\n', str(e) if error is not None else ''
+        print '\n\n', '*'*80, '\n', str(error) if error is not None else ''
         print self.mogrify(stmt, params)
         print '*'*80, '\n'
 
