@@ -23,6 +23,7 @@ class Entity(object):
 	"""
 	
 	def __init__(self, name):
+		self.parent = None
 		self.name = name
 
 	@property
@@ -32,12 +33,16 @@ class Entity(object):
 	def create_sql(self):
 		return self.create_template.render(
 			entity_type=type(self).__name__,
-			objid=self.objid)
+			name=self.name,
+			objid=self.objid,
+			parent=self.parent)
 
 	def drop_sql(self, if_exists=False, cascade=False):
 		return self.drop_template.render(
 			entity_type=type(self).__name__,
+			name=self.name,
 			objid=self.objid,
+			parent=self.parent,
 			if_exists=if_exists,
 			cascade=cascade
 		)
@@ -45,14 +50,14 @@ class Entity(object):
 class ChildEntity(Entity):
 	"""Base class for relational entities that are bound to a parent."""
 
-	def __init__(self, parent, name):
-		self.parent = parent
+	def __init__(self, parent, name):		
 		Entity.__init__(self, name)
+		self.parent = parent
 
 	@property
 	def objid(self):
 		return '.'.join(
-			(_quote_wrap(self.parent.objid), _quote_wrap(self.name))
+			(_quote_wrap(self.parent.name), _quote_wrap(self.name))
 		)
 	
 class schema(Entity):
@@ -65,4 +70,15 @@ class table(ChildEntity):
 
 class view(ChildEntity):
 	pass
-	
+
+class column(ChildEntity):
+	_alter_table = "ALTER TABLE {{ parent.objid }} "
+	create_template_string = _alter_table + " ADD COLUMN {{ name }} TEXT"
+	drop_template_string = _alter_table + """
+		DROP COLUMN {{ name }}
+		{% if if_exists %}
+			IF EXISTS
+		{% endif %}
+	"""
+	create_template = Template(create_template_string)
+	drop_template = Template(drop_template_string)

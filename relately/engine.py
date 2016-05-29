@@ -25,13 +25,18 @@ class Engine(object):
                     print self.mogrify(*args)
                     raise
                 except psycopg2.ProgrammingError:
-                    #print self.mogrify(*args)
+                    print self.mogrify(*args)
                     raise
 
                 try:
                     return list(c)
                 except psycopg2.ProgrammingError:
                     return None
+
+    def mogrify(self,stmt,params=None):
+        """Combines statement and params to string for human use."""
+        cur = self.conn.cursor()
+        return cur.mogrify(stmt,params)
 
     @property
     def conn_string(self):
@@ -44,17 +49,21 @@ class Engine(object):
 
     def drop_entity(
             self, entity_type, p1, p2=None, if_exists=False, cascade=False):
-        
+
         if p2 is None:
             e = getattr(entities, entity_type)(p1)
         else:
             e = getattr(entities, entity_type)(p1, p2)
         self.execute(e.drop_sql(if_exists, cascade))
 
-    _create_func_set = set('create_'+x for x in ('schema', 'table', 'view'))
-    _drop_func_set = set('drop_'+x for x in ('schema', 'table', 'view'))
+    _etypes = ('schema', 'table', 'view', 'column')
+    _create_func_set = set('create_'+x for x in _etypes)
+    _drop_func_set = set('drop_'+x for x in _etypes)
     def __getattr__(self, attr):
         if attr in self._create_func_set:
             return partial(self.create_entity, attr.replace('create_',''))
         elif attr in self._drop_func_set:
             return partial(self.drop_entity, attr.replace('drop_',''))
+        raise AttributeError(
+            type(self).__name__ +  " object has no attribute: " + attr
+        )
