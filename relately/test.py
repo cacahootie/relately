@@ -60,6 +60,15 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 1)
 
+    @unittest.skip("this one takes forever")
+    def test_star_from_tables(self):
+        r = self.engine.select({
+            "columns":'*',
+            "target":("world.countrylanguage", "world.country")
+        })
+        self.assertNotEqual(len(r), 4079)
+        self.assertNotEqual(len(r[0]), 1)
+
     def test_where(self):
         r = self.engine.select({
             "columns":('name',),

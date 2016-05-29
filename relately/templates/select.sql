@@ -6,10 +6,14 @@ SELECT
     {% if query.columns == '*' %}
         *
     {% else %}
-	   {{ query.columns|sql_entities|join(',') }}
+	   {{ query.columns|sql_entities|join(', ') }}
     {% endif %}
 FROM
-	{{ query.target|sql_entities }}
+    {% if query.target is string %}
+        {{ query.target|sql_entities }}
+    {% else %}
+	   {{ query.target|sql_entities|join(', ') }}
+    {% endif %}
 {% if query.all or query.any or query.none %}
     WHERE
 {% endif%}
