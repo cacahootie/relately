@@ -1,5 +1,5 @@
 
-def _quote_wrap(s):
+def quote_wrap(s):
 	return '"' + s + '"'
 
 class Entity(object):
@@ -59,7 +59,7 @@ class ChildEntity(Entity):
 	@property
 	def objid(self):
 		return '.'.join(
-			(_quote_wrap(self.parent.name), _quote_wrap(self.name))
+			(quote_wrap(self.parent.name), quote_wrap(self.name))
 		)
 	
 class schema(Entity): pass

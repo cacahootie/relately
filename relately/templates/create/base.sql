@@ -1,1 +1,1 @@
-CREATE {{ entity.entity_type }} {{ entity.objid }}
+CREATE {{ entity.entity_type|sql_entities }} {{ entity.objid }}

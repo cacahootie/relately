@@ -20,10 +20,17 @@ def _allowed_chars(name):
             + ' not valid characters')
     return name
 
+def _sql_entity(name):
+    if '.' in name:
+        p = name.split('.')
+        return '.'.join(entities.quote_wrap(_allowed_chars(x)) for x in p)
+    else:
+        return _allowed_chars(name)
+
 def _sql_entities(entities):
     if isinstance(entities, basestring):
-        return _allowed_chars(entities)
-    return [_allowed_chars(x) for x in entities]
+        return _sql_entity(entities)
+    return [_sql_entity(x) for x in entities]
 
 class Engine(object):
     """Encapsulate access to a database."""

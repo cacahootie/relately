@@ -25,7 +25,7 @@ class TestQuery(RelatelyTest):
     def test_star_from_table(self):
         r = self.engine.select({
             "columns":'*',
-            "target":"WORLD.city"
+            "target":"world.city"
         })
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 5)
@@ -34,13 +34,20 @@ class TestQuery(RelatelyTest):
         with self.assertRaises(ValueError):
             self.engine.select({
                 "columns":("name;DROP TABLE WORLD.city;",),
-                "target":"WORLD.city"
+                "target":"world.city"
+            })
+
+    def test_bad_table(self):
+        with self.assertRaises(ValueError):
+            self.engine.select({
+                "columns":"*",
+                "target":"world.city;DROP TABLE WORLD.city;"
             })
 
     def test_columns_from_table(self):
         r = self.engine.select({
             "columns":('name','countrycode'),
-            "target":"WORLD.city"
+            "target":"world.city"
         })
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 2)
@@ -48,7 +55,7 @@ class TestQuery(RelatelyTest):
     def test_column_from_table(self):
         r = self.engine.select({
             "columns":('name',),
-            "target":"WORLD.city"
+            "target":"world.city"
         })
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 1)
@@ -56,7 +63,7 @@ class TestQuery(RelatelyTest):
     def test_where(self):
         r = self.engine.select({
             "columns":('name',),
-            "target":"WORLD.city",
+            "target":"world.city",
             "all":[
                 {
                     "left_operand": "countrycode",
@@ -70,7 +77,7 @@ class TestQuery(RelatelyTest):
     def test_where_and(self):
         r = self.engine.select({
             "columns":('name',),
-            "target":"WORLD.city",
+            "target":"world.city",
             "all":[
                 {
                     "left_operand": "countrycode",
@@ -89,7 +96,7 @@ class TestQuery(RelatelyTest):
     def test_any(self):
         r = self.engine.select({
             "columns":('name',),
-            "target":"WORLD.city",
+            "target":"world.city",
             "any":[
                 {
                     "left_operand": "countrycode",
@@ -108,7 +115,7 @@ class TestQuery(RelatelyTest):
     def test_none(self):
         r = self.engine.select({
             "columns":('name',),
-            "target":"WORLD.city",
+            "target":"world.city",
             "none":[
                 {
                     "left_operand": "countrycode",
@@ -128,7 +135,7 @@ class TestQuery(RelatelyTest):
         with self.assertRaises(psycopg2.ProgrammingError):
             self.engine.select({
                 "columns":('name','barleycorn'),
-                "target":"WORLD.city"
+                "target":"world.city"
             })
 
 

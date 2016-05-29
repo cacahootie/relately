@@ -9,7 +9,7 @@ SELECT
 	   {{ query.columns|sql_entities|join(',') }}
     {% endif %}
 FROM
-	{{ query.target }}
+	{{ query.target|sql_entities }}
 {% if query.all or query.any or query.none %}
     WHERE
 {% endif%}

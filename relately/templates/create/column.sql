@@ -1,1 +1,1 @@
-ALTER TABLE {{ entity.parent.objid }} ADD COLUMN {{ entity.name }} TEXT
+ALTER TABLE {{ entity.parent.objid }} ADD COLUMN {{ entity.name|sql_entities }} TEXT

@@ -1,4 +1,4 @@
-DROP {{ entity.entity_type }}
+DROP {{ entity.entity_type|sql_entities }}
 {% if args.if_exists %}
 	IF EXISTS
 {% endif %}
