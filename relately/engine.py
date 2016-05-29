@@ -1,16 +1,19 @@
 
 from functools import partial
 
+from jinja2 import Environment, FileSystemLoader
 import psycopg2
 import psycopg2.extras
+import sqlparse
 
-import entities
+import entities, select
 
 class Engine(object):
     """Encapsulate access to a database."""
 
     def __init__(self):
-        """Establish the database connection."""
+        """Establish the database connection and jinja environment."""
+        self.jenv = Environment(loader=FileSystemLoader('./templates'))
         self.conn = psycopg2.connect(self.conn_string)
 
     def execute(self,stmt,params=None):
@@ -34,25 +37,28 @@ class Engine(object):
         """Combines statement and params to string for human use."""
         with self.conn as conn:
             with conn.cursor() as c:
-                return c.mogrify(stmt,params)
+                return sqlparse.format(
+                    c.mogrify(stmt,params), reindent=True, keyword_case='upper')
 
     @property
     def conn_string(self):
         return 'dbname=relately user=relately'
 
+    def select(self, query, mogrify=False):
+        return select.Select(self, query, mogrify)
+
     def create_entity(self, entity_type, name, *args, **kwargs):
-        e = getattr(entities, entity_type)(name, *args, **kwargs)
-        self.execute(e.create_sql())
-        return e
+        return getattr(entities, entity_type)\
+            (self, name, *args, **kwargs).create()
 
     def drop_entity(
             self, entity_type, p1, p2=None, if_exists=False, cascade=False):
 
         if p2 is None:
-            e = getattr(entities, entity_type)(p1)
+            e = getattr(entities, entity_type)(self, p1)
         else:
-            e = getattr(entities, entity_type)(p1, p2)
-        self.execute(e.drop_sql(if_exists, cascade))
+            e = getattr(entities, entity_type)(self, p1, p2)
+        e.drop(if_exists, cascade)
 
     _etypes = ('schema', 'table', 'view', 'column')
     _create_func_set = set('create_'+x for x in _etypes)

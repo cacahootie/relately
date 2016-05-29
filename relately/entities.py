@@ -1,8 +1,4 @@
 
-from jinja2 import Environment, FileSystemLoader, Template
-
-jenv = Environment(loader=FileSystemLoader('./templates'))
-
 def _quote_wrap(s):
 	return '"' + s + '"'
 
@@ -13,7 +9,8 @@ class Entity(object):
 
 	"""
 
-	def __init__(self, name):
+	def __init__(self, engine, name):
+		self.engine = engine
 		self.parent = None
 		self.name = name
 
@@ -28,26 +25,35 @@ class Entity(object):
 	def _get_template_name(self, action):
 		return "{}/{}.sql".format(action, self.entity_type)
 
-	def create_sql(self):
-		return jenv.get_template(self._get_template_name('create')
-			).render(entity=self)
-
-	def drop_sql(self, *args, **kwargs):
-		argnames = ('if_exists','cascade')
+	@staticmethod
+	def _process_args(argnames, args, kwargs): # Intentionally not expanded!
 		kwargs.update(zip(argnames, args))
 		if not set(kwargs.keys()).issubset(argnames):
 			raise ValueError(kwargs.keys())
-		return jenv.get_template(self._get_template_name('drop')
+		return kwargs
+
+	def get_sql(self, action, args=None):
+		return self.engine.jenv.get_template(self._get_template_name(action)
 			).render(
 				entity=self,
-				args=kwargs
+				args=args
 			)
+
+	def create(self):
+		self.engine.execute(self.get_sql('create'))
+		return self
+
+	drop_args = ('if_exists', 'cascade')
+	def drop(self, *args, **kwargs):
+		args = self._process_args(self.drop_args, args, kwargs)
+		self.engine.execute(self.get_sql('drop', args))
+		return None
 
 class ChildEntity(Entity):
 	"""Base class for relational entities that are bound to a parent."""
 
-	def __init__(self, parent, name):		
-		Entity.__init__(self, name)
+	def __init__(self, engine, parent, name):		
+		Entity.__init__(self, engine, name)
 		self.parent = parent
 
 	@property
