@@ -25,23 +25,23 @@ class Entity(object):
 	def entity_type(self):
 		return type(self).__name__
 
-	def create_sql(self):
-		return jenv.get_template("create/{}.sql".format(self.entity_type)).render(
-			entity_type=self.entity_type,
-			name=self.name,
-			objid=self.objid,
-			parent=self.parent
-		)
+	def _get_template_name(self, action):
+		return "{}/{}.sql".format(action, self.entity_type)
 
-	def drop_sql(self, if_exists=False, cascade=False):
-		return jenv.get_template("drop/{}.sql".format(self.entity_type)).render(
-			entity_type=self.entity_type,
-			name=self.name,
-			objid=self.objid,
-			parent=self.parent,
-			if_exists=if_exists,
-			cascade=cascade
-		)
+	def create_sql(self):
+		return jenv.get_template(self._get_template_name('create')
+			).render(entity=self)
+
+	def drop_sql(self, *args, **kwargs):
+		argnames = ('if_exists','cascade')
+		kwargs.update(zip(argnames, args))
+		if not set(kwargs.keys()).issubset(argnames):
+			raise ValueError(kwargs.keys())
+		return jenv.get_template(self._get_template_name('drop')
+			).render(
+				entity=self,
+				args=kwargs
+			)
 
 class ChildEntity(Entity):
 	"""Base class for relational entities that are bound to a parent."""

@@ -1,8 +1,8 @@
-DROP {{ entity_type }}
-{% if if_exists %}
+DROP {{ entity.entity_type }}
+{% if args.if_exists %}
 	IF EXISTS
 {% endif %}
-{{ objid }}
-{% if cascade %}
+{{ entity.objid }}
+{% if args.cascade %}
 	CASCADE
 {% endif %}
