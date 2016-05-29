@@ -14,6 +14,14 @@ FROM
     {% else %}
 	   {{ query.target|sql_entities|join(', ') }}
     {% endif %}
+
+{% if query.join %}
+    {% if query.join.on == "natural" %}
+        NATURAL
+    {% endif %}
+    INNER JOIN {{ query.join.target|sql_entities }}
+{% endif %}
+
 {% if query.all or query.any or query.none %}
     WHERE
 {% endif%}

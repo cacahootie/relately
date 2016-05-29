@@ -83,7 +83,7 @@ class TestQuery(RelatelyTest):
         })
         self.assertEqual(len(r), 57)
 
-    def test_where_and(self):
+    def test_all(self):
         r = self.engine.select({
             "columns":('name',),
             "target":"world.city",
@@ -147,6 +147,17 @@ class TestQuery(RelatelyTest):
                 "target":"world.city"
             })
 
+    def test_join(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"world.city",
+            "join":{
+                "target":"world.countrylanguage",
+                "on":"natural"
+            }
+        })
+        self.assertEqual(len(r), 30670)
+        self.assertEqual(len(r[0]), 8)
 
 
 class TestDDL(RelatelyTest):
