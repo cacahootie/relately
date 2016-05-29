@@ -1,6 +1,8 @@
 
 import unittest
 
+import psycopg2
+
 import engine
 from select import Select
 
@@ -34,6 +36,13 @@ class TestQuery(RelatelyTest):
         })
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 2)
+
+    def test_nonexistent_column(self):
+        with self.assertRaises(psycopg2.ProgrammingError):
+            self.engine.select({
+                "columns":('name','barleycorn'),
+                "target":"WORLD.city"
+            })
 
 class TestDDL(RelatelyTest):
 

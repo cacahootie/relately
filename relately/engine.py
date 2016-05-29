@@ -1,5 +1,6 @@
 
 from functools import partial
+import os
 
 from jinja2 import Environment, FileSystemLoader
 import psycopg2
@@ -7,6 +8,8 @@ import psycopg2.extras
 import sqlparse
 
 import entities, select
+
+DEBUG = bool(os.environ.get('DEBUG'))
 
 class Engine(object):
     """Encapsulate access to a database."""
@@ -23,14 +26,17 @@ class Engine(object):
                 args = (stmt,) if params is None else (stmt,params)
                 try:
                     c.execute(*args)
-                except:
-                    print self.mogrify(*args)
+                except Exception as e:
+                    if DEBUG:
+                        print '\n\n', '*'*80, '\n', str(e)
+                        print self.mogrify(*args)
+                        print '*'*80, '\n',
                     raise
 
                 try:
                     return list(c) if c.rowcount != -1 else None
-                except psycopg2.ProgrammingError:
-                    print self.mogrify(*args)
+                except psycopg2.ProgrammingError as e:
+                    if DEBUG: print str(e), self.mogrify(*args)
                     raise
 
     def mogrify(self,stmt,params=None):

@@ -1,6 +1,4 @@
 SELECT
-	{% for column in query.columns %}
-		{{ column }}{% if not loop.last %},{% endif %}
-	{% endfor %}
+	{{ query.columns|join(',') }}
 FROM
 	{{ query.target }}
