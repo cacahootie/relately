@@ -19,12 +19,10 @@ class Engine(object):
                 #print self.mogrify(*args)
                 try:
                     c.execute(*args)
-                except psycopg2.IntegrityError:
-                    raise errors.IntegrityError
-                except psycopg2.DataError:
-                    print self.mogrify(*args)
-                    raise
-                except psycopg2.ProgrammingError:
+                except (
+                        psycopg2.DataError,
+                        psycopg2.ProgrammingError,
+                        psycopg2.IntegrityError):
                     print self.mogrify(*args)
                     raise
 
@@ -35,8 +33,9 @@ class Engine(object):
 
     def mogrify(self,stmt,params=None):
         """Combines statement and params to string for human use."""
-        cur = self.conn.cursor()
-        return cur.mogrify(stmt,params)
+        with self.conn as conn:
+            with conn.cursor() as c:
+                return c.mogrify(stmt,params)
 
     @property
     def conn_string(self):

@@ -1,0 +1,1 @@
+ALTER TABLE {{ parent.objid }} ADD COLUMN {{ name }} TEXT

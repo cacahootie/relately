@@ -1,5 +1,7 @@
 
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader, Template
+
+jenv = Environment(loader=FileSystemLoader('./templates'))
 
 def _quote_wrap(s):
 	return '"' + s + '"'
@@ -10,17 +12,6 @@ class Entity(object):
 	tables, views, etc...
 
 	"""
-	create_template_string = "CREATE {{ entity_type }} {{ objid }}"
-	drop_template_string = """
-		DROP {{ entity_type }}
-		{% if if_exists %}
-			IF EXISTS
-		{% endif %}
-		{{ objid }}
-		{% if cascade %}
-			CASCADE
-		{% endif %}
-	"""
 	
 	def __init__(self, name):
 		self.parent = None
@@ -30,16 +21,21 @@ class Entity(object):
 	def objid(self):
 		return self.name
 
+	@property
+	def entity_type(self):
+		return type(self).__name__
+
 	def create_sql(self):
-		return self.create_template.render(
-			entity_type=type(self).__name__,
+		return jenv.get_template("create/{}.sql".format(self.entity_type)).render(
+			entity_type=self.entity_type,
 			name=self.name,
 			objid=self.objid,
-			parent=self.parent)
+			parent=self.parent
+		)
 
 	def drop_sql(self, if_exists=False, cascade=False):
-		return self.drop_template.render(
-			entity_type=type(self).__name__,
+		return jenv.get_template("drop/{}.sql".format(self.entity_type)).render(
+			entity_type=self.entity_type,
 			name=self.name,
 			objid=self.objid,
 			parent=self.parent,
@@ -61,24 +57,13 @@ class ChildEntity(Entity):
 		)
 	
 class schema(Entity):
-	create_template = Template(Entity.create_template_string)
-	drop_template = Template(Entity.drop_template_string)
+	pass
 
 class table(ChildEntity):
-	create_template = Template(Entity.create_template_string + "()")
-	drop_template = Template(Entity.drop_template_string)
+	pass
 
 class view(ChildEntity):
 	pass
 
 class column(ChildEntity):
-	_alter_table = "ALTER TABLE {{ parent.objid }} "
-	create_template_string = _alter_table + " ADD COLUMN {{ name }} TEXT"
-	drop_template_string = _alter_table + """
-		DROP COLUMN {{ name }}
-		{% if if_exists %}
-			IF EXISTS
-		{% endif %}
-	"""
-	create_template = Template(create_template_string)
-	drop_template = Template(drop_template_string)
+	pass
