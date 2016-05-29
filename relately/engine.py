@@ -10,8 +10,11 @@ import sqlparse
 
 import entities, select
 
+
+# Controls logging of SQL queries to stdout
 DEBUG = bool(os.environ.get('DEBUG'))
 LOGALL = bool(os.environ.get('LOGALL'))
+
 _valid_chars = string.ascii_letters + string.digits + '_-'
 
 def _allowed_chars(name):
@@ -60,9 +63,10 @@ class Engine(object):
                     raise
 
     def messageify(self, stmt, params=None, error=None):
-        print '\n\n', '*'*80, '\n', str(error) if error is not None else ''
-        print self.mogrify(stmt, params)
-        print '*'*80, '\n'
+        print self.jenv.get_template('sys/sql_error.txt').render(
+            error = error,
+            sql = self.mogrify(stmt, params)
+        )
 
     def mogrify(self, stmt, params=None):
         """Combines statement and params to string for human use."""
