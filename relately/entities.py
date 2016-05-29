@@ -8,11 +8,11 @@ def _quote_wrap(s):
 
 class Entity(object):
 	"""
-	Base class for postgres relational entities such as databases,
+	Base class for postgres relational entities such as schemata,
 	tables, views, etc...
 
 	"""
-	
+
 	def __init__(self, name):
 		self.parent = None
 		self.name = name
@@ -56,14 +56,7 @@ class ChildEntity(Entity):
 			(_quote_wrap(self.parent.name), _quote_wrap(self.name))
 		)
 	
-class schema(Entity):
-	pass
-
-class table(ChildEntity):
-	pass
-
-class view(ChildEntity):
-	pass
-
-class column(ChildEntity):
-	pass
+class schema(Entity): pass
+class table(ChildEntity): pass
+class view(ChildEntity): pass
+class column(ChildEntity): pass

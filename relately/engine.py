@@ -7,8 +7,10 @@ import psycopg2.extras
 import entities
 
 class Engine(object):
+    """Encapsulate access to a database."""
 
     def __init__(self):
+        """Establish the database connection."""
         self.conn = psycopg2.connect(self.conn_string)
 
     def execute(self,stmt,params=None):
@@ -16,20 +18,17 @@ class Engine(object):
         with self.conn as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as c:
                 args = (stmt,) if params is None else (stmt,params)
-                #print self.mogrify(*args)
                 try:
                     c.execute(*args)
-                except (
-                        psycopg2.DataError,
-                        psycopg2.ProgrammingError,
-                        psycopg2.IntegrityError):
+                except:
                     print self.mogrify(*args)
                     raise
 
                 try:
-                    return list(c)
+                    return list(c) if c.rowcount != -1 else None
                 except psycopg2.ProgrammingError:
-                    return None
+                    print self.mogrify(*args)
+                    raise
 
     def mogrify(self,stmt,params=None):
         """Combines statement and params to string for human use."""
