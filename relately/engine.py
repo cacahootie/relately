@@ -1,6 +1,7 @@
 
 from functools import partial
 import os
+import string
 
 from jinja2 import Environment, FileSystemLoader
 import psycopg2
@@ -10,6 +11,19 @@ import sqlparse
 import entities, select
 
 DEBUG = bool(os.environ.get('DEBUG'))
+LOGALL = bool(os.environ.get('LOGALL'))
+_valid_chars = string.ascii_letters + string.digits + '_-'
+
+def _allowed_chars(name):
+    if not set(name).issubset(_valid_chars):
+        raise ValueError(str(list(set(name) - set(_valid_chars)))
+            + ' not valid characters')
+    return name
+
+def _sql_entities(entities):
+    if isinstance(entities, basestring):
+        return _allowed_chars(entities)
+    return [_allowed_chars(x) for x in entities]
 
 class Engine(object):
     """Encapsulate access to a database."""
@@ -17,6 +31,7 @@ class Engine(object):
     def __init__(self):
         """Establish the database connection and jinja environment."""
         self.jenv = Environment(loader=FileSystemLoader('./templates'))
+        self.jenv.filters['sql_entities'] = _sql_entities
         self.conn = psycopg2.connect(self.conn_string)
 
     def execute(self,stmt,params=None):
@@ -26,20 +41,23 @@ class Engine(object):
                 args = (stmt,) if params is None else (stmt,params)
                 try:
                     c.execute(*args)
+                    if LOGALL: self.messageify(stmt, params)
                 except Exception as e:
-                    if DEBUG:
-                        print '\n\n', '*'*80, '\n', str(e)
-                        print self.mogrify(*args)
-                        print '*'*80, '\n',
+                    if DEBUG: self.messageify(stmt, params, e)
                     raise
 
                 try:
                     return list(c) if c.rowcount != -1 else None
                 except psycopg2.ProgrammingError as e:
-                    if DEBUG: print str(e), self.mogrify(*args)
+                    if DEBUG: self.messageify(stmt, params, e)
                     raise
 
-    def mogrify(self,stmt,params=None):
+    def messageify(self, stmt, params=None, error=None):
+        print '\n\n', '*'*80, '\n', str(e) if error is not None else ''
+        print self.mogrify(stmt, params)
+        print '*'*80, '\n'
+
+    def mogrify(self, stmt, params=None):
         """Combines statement and params to string for human use."""
         with self.conn as conn:
             with conn.cursor() as c:

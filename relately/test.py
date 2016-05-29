@@ -24,12 +24,20 @@ class TestQuery(RelatelyTest):
 
     def test_star_from_table(self):
         r = self.engine.select({
-            "columns":('*',),
+            "columns":'*',
             "target":"WORLD.city"
         })
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 5)
-    def test_column_from_table(self):
+
+    def test_bad_column(self):
+        with self.assertRaises(ValueError):
+            self.engine.select({
+                "columns":("name;DROP TABLE WORLD.city;",),
+                "target":"WORLD.city"
+            })
+
+    def test_columns_from_table(self):
         r = self.engine.select({
             "columns":('name','countrycode'),
             "target":"WORLD.city"
@@ -37,12 +45,36 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 2)
 
+    def test_column_from_table(self):
+        r = self.engine.select({
+            "columns":('name',),
+            "target":"WORLD.city"
+        })
+        self.assertEqual(len(r), 4079)
+        self.assertEqual(len(r[0]), 1)
+
+    def test_where(self):
+        r = self.engine.select({
+            "columns":('name',),
+            "target":"WORLD.city",
+            "where":[
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "usa"
+                }
+            ]
+        })
+        self.assertNotEqual(len(r), 4079)
+
     def test_nonexistent_column(self):
         with self.assertRaises(psycopg2.ProgrammingError):
             self.engine.select({
                 "columns":('name','barleycorn'),
                 "target":"WORLD.city"
             })
+
+
 
 class TestDDL(RelatelyTest):
 
