@@ -10,9 +10,11 @@ SELECT
     {% endif %}
 FROM
 	{{ query.target }}
-{% if query.where %}
+{% if query.all or query.any or query.none %}
     WHERE
-    {% for condition in query.where %}
+{% endif%}
+{% if query.all %}
+    {% for condition in query.all %}
         {% if condition.left_operand %}
             {{ where_condition(condition) }}
             {% if not loop.last %}
@@ -21,12 +23,21 @@ FROM
         {% endif %}
     {% endfor %}
 {% elif query.any %}
-    WHERE
     {% for condition in query.any %}
         {% if condition.left_operand %}
             {{ where_condition(condition) }}
             {% if not loop.last %}
                 OR
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% elif query.none %}
+    {% for condition in query.none %}
+        NOT 
+        {% if condition.left_operand %}
+            {{ where_condition(condition) }}
+            {% if not loop.last %}
+                AND
             {% endif %}
         {% endif %}
     {% endfor %}

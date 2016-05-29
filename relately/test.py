@@ -57,7 +57,7 @@ class TestQuery(RelatelyTest):
         r = self.engine.select({
             "columns":('name',),
             "target":"WORLD.city",
-            "where":[
+            "all":[
                 {
                     "left_operand": "countrycode",
                     "operator": "=",
@@ -71,7 +71,7 @@ class TestQuery(RelatelyTest):
         r = self.engine.select({
             "columns":('name',),
             "target":"WORLD.city",
-            "where":[
+            "all":[
                 {
                     "left_operand": "countrycode",
                     "operator": "=",
@@ -104,6 +104,25 @@ class TestQuery(RelatelyTest):
             ]
         })
         self.assertEqual(len(r), 307)
+
+    def test_none(self):
+        r = self.engine.select({
+            "columns":('name',),
+            "target":"WORLD.city",
+            "none":[
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "ARG"
+                },
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "BRA"
+                }
+            ]
+        })
+        self.assertEqual(len(r), 3772)
 
     def test_nonexistent_column(self):
         with self.assertRaises(psycopg2.ProgrammingError):
