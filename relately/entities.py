@@ -4,7 +4,7 @@ from jinja2 import Environment, FileSystemLoader, Template
 jenv = Environment(loader=FileSystemLoader('./templates'))
 
 def _quote_wrap(s):
-	return '"' + s.replace('"',r'\"') + '"'
+	return '"' + s + '"'
 
 class Entity(object):
 	"""
