@@ -8,12 +8,6 @@
     {{ condition.right_operand|sql_entities }}
 {% endmacro %}
 
-{% macro having_condition(condition) %}
-    {{ condition.left_operand|sql_entities }}
-    {{ condition.operator }}
-    {{ condition.right_operand }}
-{% endmacro %}
-
 SELECT
     {% if query.columns == '*' %}
         *
@@ -80,5 +74,11 @@ FROM
     GROUP BY {{ query.group_by|sql_entities|join(', ') }}
 {% endif %}
 {% if query.having %}
-    HAVING {{ having_condition(query.having) }}
+    HAVING
+    {% for condition in query.having %}
+        {{ where_condition(condition) }}
+        {% if not loop.last %}
+            AND
+        {% endif %}
+    {% endfor %}
 {% endif %}
