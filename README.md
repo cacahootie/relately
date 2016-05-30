@@ -4,7 +4,11 @@ rest interface for postgresql select queries.
 # Use
 This is a standard flask/wsgi app, so the general aspects of running in dev mode
 and deploying behind gunicorn/uwsgi and nginx should go without saying.  There's
-a file in the project root, `run.py` which will run a simple development version.
+a file in the project root, `run.py` which will run a simple development version,
+and a file `relately-server` which is a CLI script intended to be used for
+general development _outside_ this project.
+
+`relately-server -p 8008 -d relately -u relately --password plaintextreally`
 
 # API
 Currently the server supports one method, `select` in either GET or POST.
