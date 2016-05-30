@@ -273,6 +273,19 @@ class TestQuery(RelatelyTest):
         })
         self.assertEqual(len(r), 2)
 
+    def test_having_bobbytables(self):
+        with self.assertRaises(psycopg2.DataError):
+            r = self.engine.select({
+                "columns":("name", "max|num"),
+                "target":"join_test.t1",
+                "group_by":("name",),
+                "having_all":({
+                    "left_operand": "sum|num",
+                    "operator": ">",
+                    "right_operand": "noodle;DROP SCHEMA join_test;"
+                },)
+            })
+
 
 class TestDDL(RelatelyTest):
 

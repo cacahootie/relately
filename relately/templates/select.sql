@@ -55,23 +55,19 @@ FROM
 {% if query.all or query.any or query.none %}
     WHERE
 {% endif%}
-{% if query.all %}
-    {{ where_clause(query.all, "AND") }}
-{% elif query.any %}
-    {{ where_clause(query.any, "OR") }}
-{% elif query.none %}
-    {{ where_clause(query.none, "AND", True) }}
-{% endif %}
+{% for clause in [(query.all, "AND"), (query.any, "OR"), (query.none,"AND",True)] %}
+    {{ where_clause(*clause) }}
+{% endfor %}
 {% if query.group_by %}
     GROUP BY {{ query.group_by|sql_entities|join(', ') }}
 {% endif %}
 {% if query.having_all or query.having_any or query.having_none %}
     HAVING
 {% endif %}
-{% if query.having_all %}
-    {{ where_clause(query.having_all, "AND") }}
-{% elif query.having_any %}
-    {{ where_clause(query.having_any, "OR") }}
-{% elif query.having_none %}
-    {{ where_clause(query.having_none, "AND", True) }}
-{% endif %}
+{% for clause in [
+    (query.having_all, "AND"),
+    (query.having_any, "OR"),
+    (query.having_none,"AND",True)
+]%}
+    {{ where_clause(*clause) }}
+{% endfor %}
