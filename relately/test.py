@@ -1,7 +1,9 @@
 
 import unittest
+import json
 
 import psycopg2
+from server import app
 
 import engine
 from select import Select
@@ -331,7 +333,7 @@ class TestQuery(RelatelyTest):
             })
 
     def test_json(self):
-        json = """{
+        jstr = """{
             "columns":["name"],
             "target":"world.city",
             "all":[
@@ -342,8 +344,26 @@ class TestQuery(RelatelyTest):
                 }
             ]
         }"""
-        r = self.engine.select(json)
+        r = self.engine.select(jstr)
         self.assertEqual(len(r), 57)
+
+    def test_request(self):
+        jstr = """{
+            "columns":["name"],
+            "target":"world.city",
+            "all":[
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "ARG"
+                }
+            ]
+        }"""
+        app.config['DEBUG'] = True
+        with app.test_client() as c:
+            r = c.post('/select', data=jstr)
+            r = json.loads(r.data)["results"]
+            self.assertEqual(len(r), 57)        
 
 
 def getTests(cls):
