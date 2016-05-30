@@ -32,5 +32,5 @@ def Select(engine, query, mogrify=False):
     query['_having'] = filter(fil, having)
     sql = engine.jenv.get_template('select.sql').render(query=query)
     if mogrify:
-        return engine.mogrify(sql)
+        return engine.mogrify(sql, params)
     return engine.execute(sql, params)

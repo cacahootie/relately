@@ -12,6 +12,8 @@ eng = engine.Engine()
 
 @app.route("/select", methods=["POST"])
 def select():
+    if request.args.get('mogrify'):
+        return eng.select(request.get_json(force=True), mogrify=True)
     return jsonify({"results":eng.select(request.get_json(force=True))})
 
 @app.route("/select/<schema>/<table>", methods=["GET"])
