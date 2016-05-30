@@ -13,3 +13,11 @@ eng = engine.Engine()
 @app.route("/select", methods=["POST"])
 def select():
     return jsonify({"results":eng.select(request.get_json(force=True))})
+
+@app.route("/select/<schema>/<table>", methods=["GET"])
+def select_get(schema, table):
+    return jsonify({"results":eng.select({
+        "columns":"*",
+        "target":"{}.{}".format(schema,table)
+    })})
+

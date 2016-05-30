@@ -363,7 +363,14 @@ class TestQuery(RelatelyTest):
         with app.test_client() as c:
             r = c.post('/select', data=jstr)
             r = json.loads(r.data)["results"]
-            self.assertEqual(len(r), 57)        
+            self.assertEqual(len(r), 57)
+
+    def test_get_request(self):
+        app.config['DEBUG'] = True
+        with app.test_client() as c:
+            r = c.get('/select/join_test/t1')
+            r = json.loads(r.data)["results"]
+            self.assertEqual(len(r), 3)
 
 
 def getTests(cls):
