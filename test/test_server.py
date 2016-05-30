@@ -2,7 +2,9 @@
 import unittest
 import json
 
-from relately.server import app
+from relately.server import get_instance
+
+app = get_instance()
 
 class ServerTest(unittest.TestCase):
 
@@ -41,8 +43,7 @@ class ServerTest(unittest.TestCase):
             ]
         }"""
         r = self.c.post('/select?mogrify=True', data=jstr)
-        r = r.data
-        print r
+        self.assertTrue('SELECT name' in r.data)
 
     def test_get_request(self):
         r = self.c.get('/select/join_test/t1')

@@ -3,7 +3,7 @@
 import os
 import argparse
 
-from relately.server import app
+from relately.server import get_instance
 
 if __name__ == "__main__":
 
@@ -23,6 +23,35 @@ if __name__ == "__main__":
         default=None
     )
 
+    parser.add_argument('--dbname','-d',
+        dest='dbname',
+        nargs='?',
+        type=str,
+        help='name of postgresql database to connect to',
+        default='relately'
+    )
+
+    parser.add_argument('--user','-u',
+        dest='username',
+        nargs='?',
+        type=str,
+        help='name of postgresql user to connect with',
+        default='relately'
+    )
+
+    parser.add_argument('--password',
+        dest='password',
+        nargs='?',
+        type=str,
+        help='password for postgresql user',
+        default='relately'
+    )
+
     args = parser.parse_args()
+    app = get_instance(
+        dbname=args.dbname,
+        username=args.username,
+        password=args.password
+    )
     app.config['DEBUG'] = args.debug
     app.run(port=args.port)

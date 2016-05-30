@@ -60,9 +60,9 @@ def _valid_join(join):
 class Engine(object):
     """Encapsulate access to a database."""
 
-    def __init__(self):
+    def __init__(self, dbname=None, username=None, password=None):
         """Establish the database connection and jinja environment."""
-        here = os.path.dirname(os.path.abspath(__file__))
+        self.dbname, self.username, self.password = dbname, username, password
         self.jenv = Environment(loader=PackageLoader('relately'))
         self.jenv.filters['sql_entities'] = _sql_entities
         self.jenv.filters['valid_joins'] = _valid_join
@@ -101,7 +101,16 @@ class Engine(object):
 
     @property
     def conn_string(self):
-        return 'dbname=relately user=relately'
+        if self.dbname is None:
+            return 'dbname=relately user=relately'
+        elif self.username is None:
+            return 'dbname={}'.format(self.dbname)
+        elif self.password is None:
+            return 'dbname={} user={}'.format(self.dbname, self.username)
+        else:
+            return 'dbname={} user={} password={}'.format(
+                self.dbname, self.username, self.password
+            )
 
     def select(self, query, mogrify=False):
         if isinstance(query, basestring):
