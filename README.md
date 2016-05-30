@@ -1,2 +1,2 @@
 # relately
-rest interface for postgresql
+rest interface for postgresql select queries.

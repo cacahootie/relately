@@ -13,24 +13,32 @@ import select
 
 
 # Controls logging of SQL queries to stdout
-DEBUG = bool(os.environ.get('DEBUG'))
-LOGALL = bool(os.environ.get('LOGALL'))
+DEBUG = bool(os.environ.get('DEBUG')) # Log queries that error during execution
+LOGALL = bool(os.environ.get('LOGALL')) # Log all queries
 
 _valid_chars = string.ascii_letters + string.digits + '_-'
 _valid_joins = ('left', 'right', 'full', 'cross')
 
 def quote_wrap(s):
+    """Does not need to escape because `s` is assured not to have `"` """
     return '"' + s + '"'
 
 def _allowed_chars(name):
+    """Ensure a sql entity's name contains only a limited set of valid chars."""
     if not set(name).issubset(_valid_chars):
         raise ValueError(str(list(set(name) - set(_valid_chars)))
             + ' not valid characters')
     return name
 
 def _sql_entity(name):
+    """
+    Process a sql entity, which may be a function, a dot-qualified name, or
+    a simple name.
+
+    """
     if '|' in name:
         fname, ftarget = name.split('|')
+        # Recursively validate the function name and function target
         return "{}({})".format(_sql_entity(fname), _sql_entity(ftarget))
     if '.' in name:
         p = name.split('.')

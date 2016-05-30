@@ -1,3 +1,4 @@
+"""Run the server in development mode."""
 from relately.server import app
 
 if __name__ == "__main__":

@@ -22,4 +22,3 @@ def select_get(schema, table):
         "columns":"*",
         "target":"{}.{}".format(schema,table)
     })})
-
