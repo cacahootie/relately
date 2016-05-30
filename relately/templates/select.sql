@@ -2,6 +2,12 @@
     {{ condition.left_operand|sql_entities }} {{ condition.operator }} %s
 {% endmacro %}
 
+{% macro join_condition(condition) %}
+    {{ condition.left_operand|sql_entities }}
+    {{ condition.operator }}
+    {{ condition.right_operand|sql_entities }}
+{% endmacro %}
+
 SELECT
     {% if query.columns == '*' %}
         *
@@ -22,9 +28,9 @@ FROM
     INNER JOIN {{ query.join.target|sql_entities }}
     {% if query.join.on and query.join.on != "natural" %}
         ON
-        {{ query.join.on.left_operand|sql_entities }}
-        {{ query.join.on.operator }}
-        {{ query.join.on.right_operand|sql_entities }}
+        {{ join_condition(query.join.on) }}
+    {% elif query.join.using %}
+        USING ({{ query.join.using|sql_entities }})
     {% endif %}
 {% elif query.cross_join %}
     CROSS JOIN {{ query.cross_join.target|sql_entities }}

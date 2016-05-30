@@ -173,6 +173,30 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 2)
         self.assertEqual(len(r[0]), 4)
 
+    def test_inner_join_using(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "target":"join_test.t2",
+                "using": "num"
+            }
+        })
+        self.assertEqual(len(r), 2)
+        self.assertEqual(len(r[0]), 3)
+
+    def test_natural_inner_join(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "target":"join_test.t2",
+                "on": "natural"
+            }
+        })
+        self.assertEqual(len(r), 2)
+        self.assertEqual(len(r[0]), 3)        
+
 
 class TestDDL(RelatelyTest):
 
