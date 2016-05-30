@@ -212,6 +212,22 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 2)
         self.assertEqual(len(r[0]), 3)
 
+    def test_bobbytables_join(self):
+        with self.assertRaises(ValueError):
+            self.engine.select({
+                "columns":"*",
+                "target":"join_test.t1",
+                "join":{
+                    "outer":"LEFT; DROP join_test.t1;",
+                    "target":"join_test.t2",
+                    "on": {
+                        "left_operand": "t1.num",
+                        "operator": "=",
+                        "right_operand": "t2.num"
+                    }
+                }
+            })
+
     def test_left_join_on(self):
         r = self.engine.select({
             "columns":"*",

@@ -16,9 +16,9 @@ def select():
         return eng.select(request.get_json(force=True), mogrify=True)
     return jsonify({"results":eng.select(request.get_json(force=True))})
 
-@app.route("/select/<schema>/<table>", methods=["GET"])
-def select_get(schema, table):
+@app.route("/select/<schema>/<view>", methods=["GET"])
+def select_get(schema, view):
     return jsonify({"results":eng.select({
         "columns":"*",
-        "target":"{}.{}".format(schema,table)
+        "target":"{}.{}".format(schema,view)
     })})

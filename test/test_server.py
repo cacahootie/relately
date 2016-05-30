@@ -28,6 +28,22 @@ class ServerTest(unittest.TestCase):
         r = json.loads(r.data)["results"]
         self.assertEqual(len(r), 57)
 
+    def test_request_mogrify(self):
+        jstr = """{
+            "columns":["name"],
+            "target":"world.city",
+            "all":[
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "ARG"
+                }
+            ]
+        }"""
+        r = self.c.post('/select?mogrify=True', data=jstr)
+        r = r.data
+        print r
+
     def test_get_request(self):
         r = self.c.get('/select/join_test/t1')
         r = json.loads(r.data)["results"]

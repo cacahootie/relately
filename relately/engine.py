@@ -83,15 +83,15 @@ class Engine(object):
 
                 try:
                     return list(c) if c.rowcount != -1 else None
-                except psycopg2.ProgrammingError as e:
-                    if DEBUG: self.messageify(stmt, params, e)
-                    raise
+                except psycopg2.ProgrammingError as e: # pragma: no cover
+                    if DEBUG: self.messageify(stmt, params, e) # pragma: no cover
+                    raise # pragma: no cover
 
     def messageify(self, stmt, params=None, error=None):
         print self.jenv.get_template('sys/sql_error.txt').render(
             error = error,
             sql = self.mogrify(stmt, params)
-        )
+        ) # pragma: no cover
 
     def mogrify(self, stmt, params=None):
         """Combines statement and params to string for human use."""

@@ -1,3 +1,6 @@
+
+import psycopg2
+
 from . import RelatelyTest
 
 
