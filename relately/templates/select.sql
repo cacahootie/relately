@@ -61,9 +61,11 @@ FROM
         AND
     {% endif %}
 {% endfor %}
+
 {% if query.group_by %}
     GROUP BY {{ query.group_by|sql_entities|join(', ') }}
 {% endif %}
+
 {% if query.having_all or query.having_any or query.having_none %}
     HAVING
 {% endif %}
