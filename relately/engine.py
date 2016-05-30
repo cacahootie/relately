@@ -8,7 +8,7 @@ import psycopg2
 import psycopg2.extras
 import sqlparse
 
-import entities, select
+import select
 
 
 # Controls logging of SQL queries to stdout
@@ -17,6 +17,9 @@ LOGALL = bool(os.environ.get('LOGALL'))
 
 _valid_chars = string.ascii_letters + string.digits + '_-'
 _valid_joins = ('left', 'right', 'full', 'cross')
+
+def quote_wrap(s):
+    return '"' + s + '"'
 
 def _allowed_chars(name):
     if not set(name).issubset(_valid_chars):
@@ -30,7 +33,7 @@ def _sql_entity(name):
         return "{}({})".format(_sql_entity(fname), _sql_entity(ftarget))
     if '.' in name:
         p = name.split('.')
-        return '.'.join(entities.quote_wrap(_allowed_chars(x)) for x in p)
+        return '.'.join(quote_wrap(_allowed_chars(x)) for x in p)
     else:
         return _allowed_chars(name)
 
@@ -92,28 +95,3 @@ class Engine(object):
 
     def select(self, query, mogrify=False):
         return select.Select(self, query, mogrify)
-
-    def create_entity(self, entity_type, name, *args, **kwargs):
-        return getattr(entities, entity_type)\
-            (self, name, *args, **kwargs).create()
-
-    def drop_entity(
-            self, entity_type, p1, p2=None, if_exists=False, cascade=False):
-
-        if p2 is None:
-            e = getattr(entities, entity_type)(self, p1)
-        else:
-            e = getattr(entities, entity_type)(self, p1, p2)
-        e.drop(if_exists, cascade)
-
-    _etypes = ('schema', 'table', 'view', 'column')
-    _create_func_set = set('create_'+x for x in _etypes)
-    _drop_func_set = set('drop_'+x for x in _etypes)
-    def __getattr__(self, attr):
-        if attr in self._create_func_set:
-            return partial(self.create_entity, attr.replace('create_',''))
-        elif attr in self._drop_func_set:
-            return partial(self.drop_entity, attr.replace('drop_',''))
-        raise AttributeError(
-            type(self).__name__ +  " object has no attribute: " + attr
-        )

@@ -1,1 +1,0 @@
-{% include "create/base.sql" %}
