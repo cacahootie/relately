@@ -265,7 +265,7 @@ class TestQuery(RelatelyTest):
             "columns":("name", "max|num"),
             "target":"join_test.t1",
             "group_by":("name",),
-            "having":({
+            "having_all":({
                 "left_operand": "sum|num",
                 "operator": ">",
                 "right_operand": 1

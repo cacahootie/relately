@@ -1,6 +1,6 @@
 
 def aggregate_right_operand(query):
-    kws = ('all', 'any', 'none', 'having')
+    kws = ('all', 'any', 'none', 'having_all', 'having_any', 'having_none')
     subcount, subvals = 0, []
     for kw in kws:
         try:

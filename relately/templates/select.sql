@@ -8,6 +8,20 @@
     {{ condition.right_operand|sql_entities }}
 {% endmacro %}
 
+{% macro where_clause(clause, connector, negate=False) %}
+    {% for condition in clause %}
+        {% if negate %}
+            NOT
+        {% endif %}
+        {% if condition.left_operand %}
+            {{ where_condition(condition) }}
+            {% if not loop.last %}
+                {{ connector }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
 SELECT
     {% if query.columns == '*' %}
         *
@@ -42,43 +56,22 @@ FROM
     WHERE
 {% endif%}
 {% if query.all %}
-    {% for condition in query.all %}
-        {% if condition.left_operand %}
-            {{ where_condition(condition) }}
-            {% if not loop.last %}
-                AND
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+    {{ where_clause(query.all, "AND") }}
 {% elif query.any %}
-    {% for condition in query.any %}
-        {% if condition.left_operand %}
-            {{ where_condition(condition) }}
-            {% if not loop.last %}
-                OR
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+    {{ where_clause(query.any, "OR") }}
 {% elif query.none %}
-    {% for condition in query.none %}
-        NOT 
-        {% if condition.left_operand %}
-            {{ where_condition(condition) }}
-            {% if not loop.last %}
-                AND
-            {% endif %}
-        {% endif %}
-    {% endfor %}
+    {{ where_clause(query.none, "AND", True) }}
 {% endif %}
 {% if query.group_by %}
     GROUP BY {{ query.group_by|sql_entities|join(', ') }}
 {% endif %}
-{% if query.having %}
+{% if query.having_all or query.having_any or query.having_none %}
     HAVING
-    {% for condition in query.having %}
-        {{ where_condition(condition) }}
-        {% if not loop.last %}
-            AND
-        {% endif %}
-    {% endfor %}
+{% endif %}
+{% if query.having_all %}
+    {{ where_clause(query.having_all, "AND") }}
+{% elif query.having_any %}
+    {{ where_clause(query.having_any, "OR") }}
+{% elif query.having_none %}
+    {{ where_clause(query.having_none, "AND", True) }}
 {% endif %}
