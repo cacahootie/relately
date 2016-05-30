@@ -97,7 +97,10 @@ class Engine(object):
         with self.conn as conn:
             with conn.cursor() as c:
                 return sqlparse.format(
-                    c.mogrify(stmt,params), reindent=True, keyword_case='upper')
+                    c.mogrify(stmt,params),
+                    reindent=True,
+                    keyword_case='upper'
+                )
 
     @property
     def conn_string(self):

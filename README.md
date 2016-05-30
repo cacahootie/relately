@@ -48,6 +48,8 @@ or
     }
 }
 ```
+You may also add the query string parameter `?mogrify=True` which will return
+the compiled SQL rather than executing the query.
 
 # Testing
 This package is covered by a test suite which is intended to be run by green,
