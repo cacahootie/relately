@@ -20,6 +20,14 @@ FROM
         NATURAL
     {% endif %}
     INNER JOIN {{ query.join.target|sql_entities }}
+    {% if query.join.on and query.join.on != "natural" %}
+        ON
+        {{ query.join.on.left_operand|sql_entities }}
+        {{ query.join.on.operator }}
+        {{ query.join.on.right_operand|sql_entities }}
+    {% endif %}
+{% elif query.cross_join %}
+    CROSS JOIN {{ query.cross_join.target|sql_entities }}
 {% endif %}
 
 {% if query.all or query.any or query.none %}

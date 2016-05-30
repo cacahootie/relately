@@ -60,14 +60,13 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 1)
 
-    @unittest.skip("this one takes forever")
     def test_star_from_tables(self):
         r = self.engine.select({
             "columns":'*',
-            "target":("world.countrylanguage", "world.country")
+            "target":("join_test.t1", "join_test.t2")
         })
-        self.assertNotEqual(len(r), 4079)
-        self.assertNotEqual(len(r[0]), 1)
+        self.assertEqual(len(r), 9)
+        self.assertEqual(len(r[0]), 4)
 
     def test_where(self):
         r = self.engine.select({
@@ -147,17 +146,32 @@ class TestQuery(RelatelyTest):
                 "target":"world.city"
             })
 
-    def test_join(self):
+    def test_cross_join(self):
         r = self.engine.select({
             "columns":"*",
-            "target":"world.city",
-            "join":{
-                "target":"world.countrylanguage",
-                "on":"natural"
+            "target":"join_test.t1",
+            "cross_join":{
+                "target":"join_test.t2"
             }
         })
-        self.assertEqual(len(r), 30670)
-        self.assertEqual(len(r[0]), 8)
+        self.assertEqual(len(r), 9)
+        self.assertEqual(len(r[0]), 4)
+
+    def test_inner_join(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "target":"join_test.t2",
+                "on": {
+                    "left_operand": "t1.num",
+                    "operator": "=",
+                    "right_operand": "t2.num"
+                }
+            }
+        })
+        self.assertEqual(len(r), 2)
+        self.assertEqual(len(r[0]), 4)
 
 
 class TestDDL(RelatelyTest):
