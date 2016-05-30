@@ -25,15 +25,17 @@ FROM
     {% if query.join.on == "natural" %}
         NATURAL
     {% endif %}
-    INNER JOIN {{ query.join.target|sql_entities }}
+    {% if query.join.outer %}
+        {{ query.join.outer|valid_joins }} JOIN
+    {% else %}
+        INNER JOIN     
+    {% endif %}
+    {{ query.join.target|sql_entities }}
     {% if query.join.on and query.join.on != "natural" %}
-        ON
-        {{ join_condition(query.join.on) }}
+        ON {{ join_condition(query.join.on) }}
     {% elif query.join.using %}
         USING ({{ query.join.using|sql_entities }})
     {% endif %}
-{% elif query.cross_join %}
-    CROSS JOIN {{ query.cross_join.target|sql_entities }}
 {% endif %}
 
 {% if query.all or query.any or query.none %}

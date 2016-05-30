@@ -16,6 +16,7 @@ DEBUG = bool(os.environ.get('DEBUG'))
 LOGALL = bool(os.environ.get('LOGALL'))
 
 _valid_chars = string.ascii_letters + string.digits + '_-'
+_valid_joins = ('left', 'right', 'full', 'cross')
 
 def _allowed_chars(name):
     if not set(name).issubset(_valid_chars):
@@ -35,6 +36,11 @@ def _sql_entities(entities):
         return _sql_entity(entities)
     return [_sql_entity(x) for x in entities]
 
+def _valid_join(join):
+    if join not in _valid_joins:
+        raise ValueError("Invalid join: " + join)
+    return join
+
 class Engine(object):
     """Encapsulate access to a database."""
 
@@ -42,6 +48,7 @@ class Engine(object):
         """Establish the database connection and jinja environment."""
         self.jenv = Environment(loader=FileSystemLoader('./templates'))
         self.jenv.filters['sql_entities'] = _sql_entities
+        self.jenv.filters['valid_joins'] = _valid_join
         self.conn = psycopg2.connect(self.conn_string)
 
     def execute(self,stmt,params=None):

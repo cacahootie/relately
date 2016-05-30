@@ -150,14 +150,15 @@ class TestQuery(RelatelyTest):
         r = self.engine.select({
             "columns":"*",
             "target":"join_test.t1",
-            "cross_join":{
+            "join":{
+                "outer":"cross",
                 "target":"join_test.t2"
             }
         })
         self.assertEqual(len(r), 9)
         self.assertEqual(len(r[0]), 4)
 
-    def test_inner_join(self):
+    def test_inner_join_on(self):
         r = self.engine.select({
             "columns":"*",
             "target":"join_test.t1",
@@ -195,7 +196,54 @@ class TestQuery(RelatelyTest):
             }
         })
         self.assertEqual(len(r), 2)
-        self.assertEqual(len(r[0]), 3)        
+        self.assertEqual(len(r[0]), 3)
+
+    def test_left_join_on(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "outer":"left",
+                "target":"join_test.t2",
+                "on": {
+                    "left_operand": "t1.num",
+                    "operator": "=",
+                    "right_operand": "t2.num"
+                }
+            }
+        })
+        self.assertEqual(len(r), 3)
+        self.assertEqual(len(r[0]), 4)
+
+    def test_left_join_using(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "outer":"left",
+                "target":"join_test.t2",
+                "using": "num"
+            }
+        })
+        self.assertEqual(len(r), 3)
+        self.assertEqual(len(r[0]), 3)
+
+    def test_full_join_on(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"join_test.t1",
+            "join":{
+                "outer":"full",
+                "target":"join_test.t2",
+                "on": {
+                    "left_operand": "t1.num",
+                    "operator": "=",
+                    "right_operand": "t2.num"
+                }
+            }
+        })
+        self.assertEqual(len(r), 4)
+        self.assertEqual(len(r[0]), 4)
 
 
 class TestDDL(RelatelyTest):
