@@ -21,15 +21,31 @@ Currently the server supports one method, `select` in either GET or POST.
 
 ```javascript
 {
-    "columns":["name"],
-    "target":"world.city",
-    "all":[
-        {
-            "left_operand": "countrycode",
-            "operator": "=",
-            "right_operand": "ARG"
-        }
-    ]
+    "columns":["name", "max|num"],
+    "target":"join_test.t1",
+    "group_by":["name"],
+    "having_all":[{
+        "left_operand": "sum|num",
+        "operator": ">",
+        "right_operand": 1
+    }],
+    "having_none":[{
+        "left_operand": "sum|num",
+        "operator": "<",
+        "right_operand": 3
+    }]
+}
+```
+or 
+```javascript
+{
+    "columns":"*",
+    "target":"join_test.t1",
+    "join":{
+        "outer":"left",
+        "target":"join_test.t2",
+        "using": "num"
+    }
 }
 ```
 
