@@ -245,6 +245,34 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 4)
         self.assertEqual(len(r[0]), 4)
 
+    def test_func(self):
+        r = self.engine.select({
+            "columns":("max|num",),
+            "target":"join_test.t1"
+        })
+        self.assertEqual(r[0][0], 3)
+
+    def test_group_by(self):
+        r = self.engine.select({
+            "columns":("max|num",),
+            "target":"join_test.t1",
+            "group_by":("name",)
+        })
+        self.assertEqual(len(r), 3)
+
+    def test_having(self):
+        r = self.engine.select({
+            "columns":("name", "max|num"),
+            "target":"join_test.t1",
+            "group_by":("name",),
+            "having":{
+                "left_operand": "sum|num",
+                "operator": ">",
+                "right_operand": 1
+            }
+        })
+        self.assertEqual(len(r), 2)
+
 
 class TestDDL(RelatelyTest):
 

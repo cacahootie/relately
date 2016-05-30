@@ -25,6 +25,9 @@ def _allowed_chars(name):
     return name
 
 def _sql_entity(name):
+    if '|' in name:
+        fname, ftarget = name.split('|')
+        return "{}({})".format(_sql_entity(fname), _sql_entity(ftarget))
     if '.' in name:
         p = name.split('.')
         return '.'.join(entities.quote_wrap(_allowed_chars(x)) for x in p)
@@ -40,6 +43,7 @@ def _valid_join(join):
     if join not in _valid_joins:
         raise ValueError("Invalid join: " + join)
     return join
+
 
 class Engine(object):
     """Encapsulate access to a database."""
