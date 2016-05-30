@@ -1,28 +1,11 @@
 
 import unittest
-import json
 
 import psycopg2
-from server import app
 
-import engine
-from select import Select
+from relately.select import Select
 
-
-class RelatelyTest(unittest.TestCase):
-
-    def setUp(self):
-        "Instantiate a test instance of the engine"
-        self.engine = engine.Engine()
-
-
-class TestEngine(RelatelyTest):
-
-    def test_execute(self):
-        "Make sure we can execute a text-only query"
-        r = self.engine.execute("select version()")
-        self.assertTrue(
-            r[0]['version'].startswith('PostgreSQL'))
+from . import RelatelyTest
 
 
 class TestQuery(RelatelyTest):
@@ -349,45 +332,3 @@ class TestQuery(RelatelyTest):
         }"""
         r = self.engine.select(jstr)
         self.assertEqual(len(r), 57)
-
-
-class ServerTest(unittest.TestCase):
-
-    def setUp(self):
-        "Instantiate a test instance of the engine"
-        app.config['DEBUG'] = True
-        with app.test_client() as c:
-            self.c = c
-
-    def test_request(self):
-        jstr = """{
-            "columns":["name"],
-            "target":"world.city",
-            "all":[
-                {
-                    "left_operand": "countrycode",
-                    "operator": "=",
-                    "right_operand": "ARG"
-                }
-            ]
-        }"""
-        r = self.c.post('/select', data=jstr)
-        r = json.loads(r.data)["results"]
-        self.assertEqual(len(r), 57)
-
-    def test_get_request(self):
-        r = self.c.get('/select/join_test/t1')
-        r = json.loads(r.data)["results"]
-        self.assertEqual(len(r), 3)
-
-
-def getTests(cls):
-    return unittest.TestLoader().loadTestsFromTestCase(cls)
-        
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(getTests(TestDDL))
-    return suite
-
-if __name__ == '__main__':
-    unittest.main()
