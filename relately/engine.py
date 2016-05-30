@@ -4,7 +4,7 @@ import os
 import string
 import json
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, PackageLoader
 import psycopg2
 import psycopg2.extras
 import sqlparse
@@ -64,7 +64,7 @@ class Engine(object):
         """Establish the database connection and jinja environment."""
         here = os.path.dirname(os.path.abspath(__file__))
         self.jenv = Environment(
-            loader=FileSystemLoader(os.path.join(here,'templates')))
+            loader=PackageLoader('relately','templates'))
         self.jenv.filters['sql_entities'] = _sql_entities
         self.jenv.filters['valid_joins'] = _valid_join
         self.conn = psycopg2.connect(self.conn_string)
