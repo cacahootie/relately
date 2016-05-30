@@ -55,8 +55,11 @@ FROM
 {% if query.all or query.any or query.none %}
     WHERE
 {% endif%}
-{% for clause in [(query.all, "AND"), (query.any, "OR"), (query.none,"AND",True)] %}
-    {{ where_clause(*clause) }}
+{% for clause in query._where %}
+    ({{ where_clause(*clause) }})
+    {% if not loop.last %}
+        AND
+    {% endif %}
 {% endfor %}
 {% if query.group_by %}
     GROUP BY {{ query.group_by|sql_entities|join(', ') }}
@@ -64,10 +67,9 @@ FROM
 {% if query.having_all or query.having_any or query.having_none %}
     HAVING
 {% endif %}
-{% for clause in [
-    (query.having_all, "AND"),
-    (query.having_any, "OR"),
-    (query.having_none,"AND",True)
-]%}
-    {{ where_clause(*clause) }}
+{% for clause in query._having %}
+    ({{ where_clause(*clause) }})
+    {% if not loop.last %}
+        AND
+    {% endif %}
 {% endfor %}

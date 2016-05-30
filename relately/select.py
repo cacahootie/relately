@@ -17,6 +17,19 @@ def aggregate_right_operand(query):
 
 def Select(engine, query, mogrify=False):
     query, params = aggregate_right_operand(query)
+    fil = lambda x: True if x[0] is not None else False
+    where = (
+        (query.get('all'), "AND"),
+        (query.get('any'), "OR"),
+        (query.get('none'),"AND",True)
+    )
+    query['_where'] = filter(fil, where)
+    having = (
+        (query.get('having_all'), "AND"),
+        (query.get('having_any'), "OR"),
+        (query.get('having_none'),"AND",True)
+    )
+    query['_having'] = filter(fil, having)
     sql = engine.jenv.get_template('select.sql').render(query=query)
     if mogrify:
         return engine.mogrify(sql)
