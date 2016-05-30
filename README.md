@@ -33,4 +33,5 @@ Currently the server supports one method, `select` in either GET or POST.
 This package is covered by a test suite which is intended to be run by green,
 nose or some other similar tool that will auto-detect testing files.  The tests
 do depend on the sql in `test/test_data` having been run to set up the world
-and join_test schema.
+and join_test schema.  Currently, the package has 100% test coverage (except for
+some debugging logging lines...).
