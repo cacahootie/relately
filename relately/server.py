@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, jsonify
 
-from . import engine
+import engine
 
 basedir = os.path.dirname(os.path.abspath(__file__))
 index_path = os.path.join(basedir,'static','index.html')

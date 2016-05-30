@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+"""Run relately from the current dir."""
+import os
+import argparse
+
+from relately.server import app
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        description='Query access via REST to PostgreSQL database.',
+    )
+    parser.add_argument('--no-debug','-N',
+        dest='debug',
+        action='store_false',
+        help="don't show debugger on exception or reload on file update",
+    )
+    parser.add_argument('--port','-p',
+        dest='port',
+        nargs='?',
+        type=int,
+        help='port to serve from',
+        default=None
+    )
+
+    args = parser.parse_args()
+    app.config['DEBUG'] = args.debug
+    app.run(port=args.port)
