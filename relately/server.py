@@ -13,7 +13,3 @@ eng = engine.Engine()
 @app.route("/select", methods=["POST"])
 def select():
     return jsonify({"results":eng.select(request.get_json(force=True))})
-
-@app.route("/select", methods=["GET"])
-def selectget():
-    return "GETME"
