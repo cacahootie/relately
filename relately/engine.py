@@ -63,8 +63,7 @@ class Engine(object):
     def __init__(self):
         """Establish the database connection and jinja environment."""
         here = os.path.dirname(os.path.abspath(__file__))
-        self.jenv = Environment(
-            loader=PackageLoader('relately','templates'))
+        self.jenv = Environment(loader=PackageLoader('relately'))
         self.jenv.filters['sql_entities'] = _sql_entities
         self.jenv.filters['valid_joins'] = _valid_join
         self.conn = psycopg2.connect(self.conn_string)

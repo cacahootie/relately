@@ -14,7 +14,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name='relately',
-    version='0.0.1',
+    version='0.0.4',
     url='http://github.com/cacahootie/relately/',
     license='MIT',
     author='Bradley Alan Smith',
