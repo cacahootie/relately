@@ -8,11 +8,13 @@ from server import app
 import engine
 from select import Select
 
+
 class RelatelyTest(unittest.TestCase):
 
     def setUp(self):
         "Instantiate a test instance of the engine"
         self.engine = engine.Engine()
+
 
 class TestEngine(RelatelyTest):
 
@@ -21,6 +23,7 @@ class TestEngine(RelatelyTest):
         r = self.engine.execute("select version()")
         self.assertTrue(
             r[0]['version'].startswith('PostgreSQL'))
+
 
 class TestQuery(RelatelyTest):
 
@@ -347,6 +350,15 @@ class TestQuery(RelatelyTest):
         r = self.engine.select(jstr)
         self.assertEqual(len(r), 57)
 
+
+class ServerTest(unittest.TestCase):
+
+    def setUp(self):
+        "Instantiate a test instance of the engine"
+        app.config['DEBUG'] = True
+        with app.test_client() as c:
+            self.c = c
+
     def test_request(self):
         jstr = """{
             "columns":["name"],
@@ -359,18 +371,14 @@ class TestQuery(RelatelyTest):
                 }
             ]
         }"""
-        app.config['DEBUG'] = True
-        with app.test_client() as c:
-            r = c.post('/select', data=jstr)
-            r = json.loads(r.data)["results"]
-            self.assertEqual(len(r), 57)
+        r = self.c.post('/select', data=jstr)
+        r = json.loads(r.data)["results"]
+        self.assertEqual(len(r), 57)
 
     def test_get_request(self):
-        app.config['DEBUG'] = True
-        with app.test_client() as c:
-            r = c.get('/select/join_test/t1')
-            r = json.loads(r.data)["results"]
-            self.assertEqual(len(r), 3)
+        r = self.c.get('/select/join_test/t1')
+        r = json.loads(r.data)["results"]
+        self.assertEqual(len(r), 3)
 
 
 def getTests(cls):
