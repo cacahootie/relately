@@ -330,6 +330,21 @@ class TestQuery(RelatelyTest):
                 },)
             })
 
+    def test_json(self):
+        json = """{
+            "columns":["name"],
+            "target":"world.city",
+            "all":[
+                {
+                    "left_operand": "countrycode",
+                    "operator": "=",
+                    "right_operand": "ARG"
+                }
+            ]
+        }"""
+        r = self.engine.select(json)
+        self.assertEqual(len(r), 57)
+
 
 def getTests(cls):
     return unittest.TestLoader().loadTestsFromTestCase(cls)

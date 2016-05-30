@@ -2,6 +2,7 @@
 from functools import partial
 import os
 import string
+import json
 
 from jinja2 import Environment, FileSystemLoader
 import psycopg2
@@ -94,4 +95,6 @@ class Engine(object):
         return 'dbname=relately user=relately'
 
     def select(self, query, mogrify=False):
+        if isinstance(query, basestring):
+            query = json.loads(query)
         return select.Select(self, query, mogrify)
