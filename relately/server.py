@@ -7,8 +7,8 @@ import engine
 basedir = os.path.dirname(os.path.abspath(__file__))
 index_path = os.path.join(basedir,'static','index.html')
 
-def get_instance(dbname=None, username=None, password=None):
-    app = Flask('relately')
+def get_instance(dbname=None, username=None, password=None, static_folder=None):
+    app = Flask('relately', static_folder=os.path.join(basedir,'static'))
     eng = engine.Engine(dbname, username, password)
 
     @app.route("/select", methods=["POST"])
