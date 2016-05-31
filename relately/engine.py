@@ -81,7 +81,7 @@ class Engine(object):
                     raise
 
                 try:
-                    return list(c) if c.rowcount != -1 else None
+                    return list(x[0] for x in c) if c.rowcount != -1 else None
                 except psycopg2.ProgrammingError as e: # pragma: no cover
                     if DEBUG: self.messageify(stmt, params, e) # pragma: no cover
                     raise # pragma: no cover
