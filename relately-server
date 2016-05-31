@@ -20,7 +20,7 @@ if __name__ == "__main__":
         nargs='?',
         type=int,
         help='port to serve from',
-        default=None
+        default=8000
     )
 
     parser.add_argument('--dbname','-d',
