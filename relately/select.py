@@ -30,7 +30,8 @@ def Select(engine, query, mogrify=False):
         (query.get('having_none'),"AND",True)
     )
     query['_having'] = filter(fil, having)
-    sql = engine.jenv.get_template('select.sql').render(query=query)
     if mogrify:
+        sql = engine.jenv.get_template('select.sql').render(query=query)
         return engine.mogrify(sql, params)
+    sql = engine.jenv.get_template('select_outer.sql').render(query=query)
     return engine.execute(sql, params)
