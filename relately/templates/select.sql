@@ -1,10 +1,12 @@
 {% macro where_condition(condition) %}
-    {{ condition.left_operand|sql_entities }} {{ condition.operator }} %s
+    {{ condition.left_operand|sql_entities }}
+    {{ condition.operator|sql_operators }}
+    %s
 {% endmacro %}
 
 {% macro join_condition(condition) %}
     {{ condition.left_operand|sql_entities }}
-    {{ condition.operator }}
+    {{ condition.operator|sql_operators }}
     {{ condition.right_operand|sql_entities }}
 {% endmacro %}
 

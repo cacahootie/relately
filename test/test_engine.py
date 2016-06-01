@@ -10,4 +10,4 @@ class TestEngine(RelatelyTest):
         "Make sure we can execute a text-only query"
         r = self.engine.execute("select version()")
         self.assertTrue(
-            r[0]['version'].startswith('PostgreSQL'))
+            r[0].startswith('PostgreSQL'))

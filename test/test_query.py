@@ -54,7 +54,7 @@ class TestQuery(RelatelyTest):
             "target":("join_test.t1", "join_test.t2")
         })
         self.assertEqual(len(r), 9)
-        self.assertEqual(len(r[0]), 4)
+        self.assertEqual(len(r[0]), 3)
 
     def test_where(self):
         r = self.engine.select({
@@ -170,7 +170,7 @@ class TestQuery(RelatelyTest):
             }
         })
         self.assertEqual(len(r), 9)
-        self.assertEqual(len(r[0]), 4)
+        self.assertEqual(len(r[0]), 3)
 
     def test_inner_join_on(self):
         r = self.engine.select({
@@ -186,7 +186,7 @@ class TestQuery(RelatelyTest):
             }
         })
         self.assertEqual(len(r), 2)
-        self.assertEqual(len(r[0]), 4)
+        self.assertEqual(len(r[0]), 3)
 
     def test_inner_join_using(self):
         r = self.engine.select({
@@ -243,7 +243,7 @@ class TestQuery(RelatelyTest):
             }
         })
         self.assertEqual(len(r), 3)
-        self.assertEqual(len(r[0]), 4)
+        self.assertEqual(len(r[0]), 3)
 
     def test_left_join_using(self):
         r = self.engine.select({
@@ -273,14 +273,14 @@ class TestQuery(RelatelyTest):
             }
         })
         self.assertEqual(len(r), 4)
-        self.assertEqual(len(r[0]), 4)
+        self.assertEqual(len(r[0]), 3)
 
     def test_func(self):
         r = self.engine.select({
             "columns":("max|num",),
             "target":"join_test.t1"
         })
-        self.assertEqual(r[0][0], 3)
+        self.assertEqual(r[0]['max'], 3)
 
     def test_group_by(self):
         r = self.engine.select({

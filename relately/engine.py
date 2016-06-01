@@ -18,6 +18,7 @@ LOGALL = bool(os.environ.get('LOGALL')) # Log all queries
 
 _valid_chars = string.ascii_letters + string.digits + '_-'
 _valid_joins = ('left', 'right', 'full', 'cross')
+_valid_operators = ('=<>!')
 
 def quote_wrap(s):
     """Does not need to escape because `s` is assured not to have `"` """
@@ -29,6 +30,12 @@ def _allowed_chars(name):
         raise ValueError(str(list(set(name) - set(_valid_chars)))
             + ' not valid characters')
     return name
+
+def _allowed_operators(op):
+    """Ensure that a sql operator is of the valid set."""
+    if not set(op).issubset(_valid_operators):
+        raise ValueError("Invalid SQL operator: " + op)
+    return op
 
 def _sql_entity(name):
     """
@@ -65,6 +72,7 @@ class Engine(object):
         self.dbname, self.username, self.password = dbname, username, password
         self.jenv = Environment(loader=PackageLoader('relately'))
         self.jenv.filters['sql_entities'] = _sql_entities
+        self.jenv.filters['sql_operators'] = _allowed_operators
         self.jenv.filters['valid_joins'] = _valid_join
         self.conn = psycopg2.connect(self.conn_string)
 

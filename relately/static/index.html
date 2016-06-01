@@ -8,7 +8,15 @@
     </head>
     
     <body>
-        <div id="container"></div>
+        <div id="country">
+            <h1>/select/world/country</h1>
+            <div id="country_inner" style="height: 300px; overflow: scroll; background: lightgray;"></div>
+        </div>
+
+        <div id="capitals">
+            <h1>/select/world/capitals</h1>
+            <div id="capitals_inner" style="height: 300px; overflow: scroll; background: lightgray;"></div>
+        </div>
 
         <!-- Prereqs -->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
@@ -19,8 +27,16 @@ $( document ).ready(function() {
     $.getJSON( "/select/world/country", function( data ) {
       data.results.forEach(function( obj ) {
         $("<h3 />", {
-            text: obj.name
-        }).appendTo('#container');
+            text: JSON.stringify(obj)
+        }).appendTo('#country_inner');
+      });
+    });
+
+    $.getJSON( "/select/world/capitals", function( data ) {
+      data.results.forEach(function( obj ) {
+        $("<h3 />", {
+            text: JSON.stringify(obj)
+        }).appendTo('#capitals_inner');
       });
     });
 });
