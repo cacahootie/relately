@@ -14,7 +14,7 @@ general development _outside_ this project.
 Currently the server supports one method, `select` in either GET or POST.
 
 ## Get
-`/select/<schema>/<entity>` :: `{"results":[[],[]]}`
+`/select/<schema>/<entity>` :: `{"results":[{},{}]}`
 
 ## Post
 `/select` with a json body of a query:
