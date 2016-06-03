@@ -26,7 +26,9 @@ tables/views it needs), and in any more critical environment it should probably 
 a read-only slave database for safety purposes.
 
 # API
-Currently the server supports one method, `select` in either GET or POST.
+Currently the server supports one method, `select` in either GET or POST.  relately
+uses the built-in json serialization in postgresql, so be cognizant of default json
+serialization for custom or complex types.
 
 ## Get
 `/select/<schema>/<entity>` :: `{"results":[{},{}]}`
