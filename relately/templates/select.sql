@@ -1,7 +1,7 @@
 {% macro where_condition(condition) %}
     {{ condition.left_operand|sql_entities }}
     {{ condition.operator|sql_operators }}
-    %s
+    %s -- psycopg2 parameterization
 {% endmacro %}
 
 {% macro join_condition(condition) %}
