@@ -16,6 +16,7 @@ setup(
     name='relately',
     version='0.0.5',
     url='http://github.com/cacahootie/relately/',
+    download_url='https://github.com/cacahootie/relately/tarball/0.0.5',
     license='MIT',
     author='Bradley Alan Smith',
     author_email='brad.alan.smith@gmail.com',
