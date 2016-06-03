@@ -76,5 +76,6 @@ This package is covered by a test suite which is intended to be run by green,
 nose or some other similar tool that will auto-detect testing files.  The tests
 do depend on the sql in `test/test_data` having been run to set up the world
 and join_test schema.  Currently, the package has 100% test coverage (except for
-some debugging logging lines...).  To run the tests, you should install the test
-runner of your choice globablly using pip, i.e. `sudo pip install green`.
+some debugging logging lines...).  `green` is installed as a dependency, so to
+test all you need to do is `green` in the project base directory and watch the
+magic.
