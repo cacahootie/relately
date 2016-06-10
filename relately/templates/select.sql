@@ -77,3 +77,11 @@ FROM
         AND
     {% endif %}
 {% endfor %}
+
+{% if query.order_by %}
+    ORDER BY {{ query.order_by|order_by }}
+{% endif %}
+
+{% if query.limit %}
+    LIMIT {{ query.limit|int }}
+{% endif %}

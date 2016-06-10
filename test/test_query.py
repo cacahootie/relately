@@ -48,6 +48,36 @@ class TestQuery(RelatelyTest):
         self.assertEqual(len(r), 4079)
         self.assertEqual(len(r[0]), 1)
 
+    def test_order_limit(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"world.city",
+            "order_by":"name",
+            "limit":"3"
+        })
+        self.assertEqual(len(r), 3)
+        self.assertEqual(r[1]["name"], "Aachen")
+
+    def test_order_desc(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"world.city",
+            "order_by":["name","desc"],
+            "limit":"3"
+        })
+        self.assertEqual(len(r), 3)
+        self.assertEqual(r[-1]["countrycode"], "KAZ")
+
+    def test_order_desc_multi(self):
+        r = self.engine.select({
+            "columns":"*",
+            "target":"world.city",
+            "order_by":[["countrycode","asc"],["name","desc"]],
+            "limit":"3"
+        })
+        self.assertEqual(len(r), 3)
+        self.assertEqual(r[-1]["name"], "Mazar-e-Sharif")
+
     def test_star_from_tables(self):
         r = self.engine.select({
             "columns":'*',

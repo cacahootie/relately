@@ -63,6 +63,16 @@ def _valid_join(join):
         raise ValueError("Invalid join: " + join)
     return join
 
+def _order_by(order_by):
+    if isinstance(order_by, basestring):
+        return _sql_entity(order_by)
+    try:
+        if len(order_by) == 2 and order_by[1].upper() in ('ASC', 'DESC'):
+            return "{} {}".format(_sql_entity(order_by[0]), order_by[1])
+    except AttributeError:
+        pass
+    return ', '.join(_order_by(x) for x in order_by)
+
 
 class Engine(object):
     """Encapsulate access to a database."""
@@ -74,6 +84,7 @@ class Engine(object):
         self.jenv.filters['sql_entities'] = _sql_entities
         self.jenv.filters['sql_operators'] = _allowed_operators
         self.jenv.filters['valid_joins'] = _valid_join
+        self.jenv.filters['order_by'] = _order_by
         self.conn = psycopg2.connect(self.conn_string)
 
     def execute(self,stmt,params=None):
