@@ -50,7 +50,9 @@ serialization for custom or complex types.
         "left_operand": "sum|num",
         "operator": "<",
         "right_operand": 3
-    }]
+    }],
+    "order_by":"name",
+    "limit":5
 }
 ```
 or 
