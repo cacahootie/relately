@@ -10,6 +10,7 @@ import psycopg2.extras
 import sqlparse
 
 import select
+import info
 
 
 # Controls logging of SQL queries to stdout
@@ -83,6 +84,7 @@ class Engine(object):
         self.jenv = Environment(loader=PackageLoader('relately'))
         self.jenv.filters['sql_entities'] = _sql_entities
         self.jenv.filters['sql_operators'] = _allowed_operators
+        self.jenv.filters['allowed_chars'] = _allowed_chars
         self.jenv.filters['valid_joins'] = _valid_join
         self.jenv.filters['order_by'] = _order_by
         self.conn = psycopg2.connect(self.conn_string)
@@ -138,3 +140,9 @@ class Engine(object):
         if isinstance(query, basestring):
             query = json.loads(query)
         return select.Select(self, query, mogrify)
+
+    def info(self, schema, view):
+        return info.Info(self, schema, view)
+
+    def json_schema(self, url, schema, view):
+        return info.JsonSchema(self, url, schema, view)

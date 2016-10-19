@@ -2,9 +2,11 @@ colorama==0.3.7
 coverage==4.1
 Flask==0.10.1
 funcsigs==1.0.2
+functools32==3.2.3.post2
 green==2.4.2
 itsdangerous==0.24
 Jinja2==2.8
+jsonschema==2.5.1
 MarkupSafe==0.23
 mock==2.0.0
 pbr==1.10.0

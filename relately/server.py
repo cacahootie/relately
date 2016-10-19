@@ -24,4 +24,12 @@ def get_instance(dbname=None, username=None, password=None, static_folder=None):
             "target":"{}.{}".format(schema,view)
         })})
 
+    @app.route("/info/<schema>/<view>", methods=["GET"])
+    def get_info(schema, view):
+        return jsonify({"info":eng.info(schema, view)})
+
+    @app.route("/json_schema/<schema>/<view>", methods=["GET"])
+    def get_json_schema(schema, view):
+        return jsonify(eng.json_schema(request.url, schema, view))
+
     return app
