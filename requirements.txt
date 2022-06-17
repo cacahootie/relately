@@ -15,4 +15,4 @@ python-termstyle==0.1.10
 six==1.10.0
 sqlparse==0.1.19
 Unidecode==0.4.19
-Werkzeug==0.11.10
+Werkzeug==0.15.3
